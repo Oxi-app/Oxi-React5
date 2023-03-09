@@ -1,0 +1,42 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-oxireact2-staging-145506-authRole",
+      "UnauthRoleArn": "arn:aws:iam::655114052428:role/amplify-oxireact2-staging-145506-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::655114052428:role/amplify-oxireact2-staging-145506-authRole",
+      "Region": "eu-west-1",
+      "DeploymentBucketName": "amplify-oxireact2-staging-145506-deployment",
+      "UnauthRoleName": "amplify-oxireact2-staging-145506-unauthRole",
+      "StackName": "amplify-oxireact2-staging-145506",
+      "StackId": "arn:aws:cloudformation:eu-west-1:655114052428:stack/amplify-oxireact2-staging-145506/6971a620-222a-11ed-a0f8-0a3b2a43b78b",
+      "AmplifyAppId": "d1dupfnb1j9ule"
+    },
+    "categories": {
+      "auth": {
+        "OxiReact2": {}
+      },
+      "function": {
+        "addPaymentCardFunction": {
+          "deploymentBucketName": "amplify-oxireact2-staging-145506-deployment",
+          "s3Key": "amplify-builds/addPaymentCardFunction-6a664c64426236627562-build.zip"
+        },
+        "deletePaymentCard": {
+          "deploymentBucketName": "amplify-oxireact2-staging-145506-deployment",
+          "s3Key": "amplify-builds/deletePaymentCard-5a38576b2b736e706355-build.zip"
+        },
+        "getTransactions": {
+          "deploymentBucketName": "amplify-oxireact2-staging-145506-deployment",
+          "s3Key": "amplify-builds/getTransactions-744a4b39624144694465-build.zip"
+        },
+        "mylambda": {
+          "deploymentBucketName": "amplify-oxireact2-staging-145506-deployment",
+          "s3Key": "amplify-builds/mylambda-78685633416d492f6f49-build.zip"
+        },
+        "serviceProvider": {
+          "deploymentBucketName": "amplify-oxireact2-staging-145506-deployment",
+          "s3Key": "amplify-builds/serviceProvider-464e427a7379674d3542-build.zip"
+        }
+      }
+    }
+  }
+}
