@@ -22,6 +22,7 @@ import * as Sentry from 'sentry-expo';
 import Greetings from "aws-amplify-react-native/dist/Auth/Greetings";
 import { AmplifyTheme } from 'aws-amplify-react-native';
 import IonIcon from 'react-native-vector-icons/Ionicons';
+import { BarChart, LineChart, PieChart } from "react-native-gifted-charts"; 
 
 
 Amplify.configure(awsExports) 
@@ -631,16 +632,21 @@ return(
  
           <View style={styles.greyBox}>
           <Text style={styles.carbonUsage}>{Math.round(monthlyCarbon)} kg</Text>
-          <Pressable style={styles.refreshButton} onPress={()=>{getCurrentMonthlyCarbon()}}>
-        <Icon name="refresh-cw" size={15} color="white"/>
-          </Pressable>
           </View>
 
 
 
        </View>
 
-       <Text style={{fontWeight: 'bold'}}>Basket</Text>
+        <View style={styles.transactionsViewHeader}>
+            <View style={styles.transactionsViewHeaderText}>
+              <Text style={styles.headerText}>Basket</Text>
+              <Pressable style={styles.refreshButton} onPress={()=>{getCurrentMonthlyCarbon()}}>
+        <Icon name="refresh-cw" size={15} color="#00C2FF"/>
+          </Pressable>
+            </View>
+ 
+        </View>
 
         <FlatList data={data} renderItem={renderItem} />
 
@@ -1101,6 +1107,32 @@ const styles = StyleSheet.create({
     height: '100%'
   },
 
+    transactionsViewHeader:{
+    width: "90%",
+    height: "5%",
+    borderRadius: 20,
+    borderColor: "#00C2FF",
+    borderWidth: 5,
+     backgroundColor: "#00C2FF",
+    justifyContent: 'center',
+    alignItems: 'center'
+
+  },
+
+    transactionsViewHeaderText: {
+    width: "90%",
+    height: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: 'center',
+  },
+
+    headerText: {
+    color: 'white',
+    fontSize: 17,
+    fontWeight: 'bold',
+  },
+
   actionBar: {
     flexDirection:'row',
     justifyContent: "space-between", 
@@ -1133,16 +1165,12 @@ const styles = StyleSheet.create({
   },
 
   refreshButton:{
-    width: 30,
-    height: 30,
-    backgroundColor: '#00C2FF',
-    borderRadius: 15,
+    width: 25,
+    height: 25,
+    backgroundColor: 'white',
+    borderRadius: 12.5,
     justifyContent: "center",
     alignItems: 'center',
-    alignSelf: "flex-end",
-    position: 'relative',
-    right: 10,
-    top: 18
   },
 
   modalView: {
@@ -2819,17 +2847,102 @@ const CardScreen = ({navigation, route}) => {
 
 
 const ChartScreen = ({navigation, route}) => {
+
+  const [month, updateCurrentMonth] = useState(null);
+  const [year, updateYear] = useState(null);
+  const [userSub, updateUserSub] = useState(null);
+  const [basketItems, updateBasketItems] = useState(null)
+  //const [data, updateData] = useState(null)
+
+  // Reformat the date in AWSDATETIME format
+  function dateFormat() {
+    const currentMonth = new Date().getMonth() + 1;
+    const year = new Date().getFullYear();
+
+    if (currentMonth < 10) {
+      updateCurrentMonth("0" + currentMonth);
+    } else {
+      updateCurrentMonth(currentMonth);
+    }
+    updateYear(year);
+  }
+
+  useEffect(()=>{
+    dateFormat();
+    getUserInfo();
+  }, [])
+
+  useEffect(() => {
+    if (month && year && userSub) {
+      getCurrentMonthlyCarbon();
+    }
+  }, [month, year, userSub])
+
+  async function getCurrentMonthlyCarbon(){
+    try{
+   
+      let dateCheck = year + "-" + month;
+
+      console.log(dateCheck)
+      console.log(userSub)
+      
+
+      // const basketItems = (
+      //   await DataStore.query(Basket, (n) => n.createdAt("contains", dateCheck).owner('eq', userSub),{sort: s=>s.createdAt(SortDirection.DESCENDING)})
+      // )
+
+      const shoppingArray = (await DataStore.query(Basket, (n) => n.createdAt("contains", dateCheck).owner('eq', userSub).Category('eq', 'Shopping')))
+      const travelArray = (await DataStore.query(Basket, (n) => n.createdAt("contains", dateCheck).owner('eq', userSub).Category('eq', 'Travel')))
+      const foodArray = (await DataStore.query(Basket, (n) => n.createdAt("contains", dateCheck).owner('eq', userSub).Category('eq', 'Food')))
+      const entertainmentArray = (await DataStore.query(Basket, (n) => n.createdAt("contains", dateCheck).owner('eq', userSub).Category('eq', 'Entertainment')))
+      const utilitiesArray = (await DataStore.query(Basket, (n) => n.createdAt("contains", dateCheck).owner('eq', userSub).Category('eq', 'Utilities')))
+      const miscellaneousArray = (await DataStore.query(Basket, (n) => n.createdAt("contains", dateCheck).owner('eq', userSub).Category('eq', 'Miscellaneous')))
+
+      const shopppingCarbon = ((shoppingArray.map((p)=>p.Carbon)).map(Number)).reduce((a, b) => a + b, 0)
+      const travelCarbon = ((travelArray.map((p)=>p.Carbon)).map(Number)).reduce((a, b) => a + b, 0)
+      const foodCarbon = ((foodArray.map((p)=>p.Carbon)).map(Number)).reduce((a, b) => a + b, 0)
+      const entertainmentCarbon = ((entertainmentArray.map((p)=>p.Carbon)).map(Number)).reduce((a, b) => a + b, 0)
+      const utilitiesCarbon = ((utilitiesArray.map((p)=>p.Carbon)).map(Number)).reduce((a, b) => a + b, 0)
+      const miscellaneousCarbon = ((miscellaneousArray.map((p)=>p.Carbon)).map(Number)).reduce((a, b) => a + b, 0)
+
+
+      //const data = [ {value:shopppingCarbon, frontColor: "green"}, {value:travelCarbon, frontColor: "red"}, {value:foodCarbon, frontColor: "orange"}, {value:entertainmentCarbon, frontColor: "purple"}, {value:utilitiesCarbon, frontColor: "brown"}, {value:miscellaneousCarbon, frontColor: "black"} ]
+
+      //updateData(data)
+
+      //console.log(data)
+      
+      
+      
+      
+      //updateBasketItems(basketItems)
+
+
+    }
+   catch (error) {
+    console.log("Error saving transaction", error);
+
+  }
+}
+
+async function getUserInfo() {
+  const userSub = (await Auth.currentAuthenticatedUser()).attributes.sub;
+  updateUserSub(userSub)
+}
+
+const data = [{"frontColor": "green", "value": 12.596}, {"frontColor": "red", "value": 48}, {"frontColor": "orange", "value": 1}, {"frontColor": "purple", "value": 3.8}, {"frontColor": "brown", "value": 32}, {"frontColor": "black", "value": 0}]
+
+
   return(
-    <SafeAreaView>
-    <Text style={styles.comingSoon}>
-      Coming Soon...{'\n'}{'\n'}
-    </Text>
-    <Text style={styles.cardScreenText}>
-      Gain greater insight into your carbon footprint{'\n'}{'\n'}
-      Spot trends{'\n'}{'\n'}
-      Oxi will recommend ways to improve your spending
-    </Text>
-    </SafeAreaView>
+<SafeAreaView>
+    
+      <BarChart 
+        data={data} 
+        roundedTop
+        width={300}
+        barWidth={18}
+      />
+  </SafeAreaView>
   )
 }
 
